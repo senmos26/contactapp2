@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Liste des Contacts</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#refreshButton').click(function(e) {
+                e.preventDefault();
+                location.reload();
+            });
+        });
+    </script>
+
+    <!-- CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+    </script>
+</head>
+<body class="">
+@include('layouts.main')
+<div class="container ">
+    <div class="row ">
+
+            <div class="col">
+                @if(session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
+            </div>
+
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col"><h3>All Contacts</h3></div>
+                <div class="col"><a class="btn btn-outline-success" href="{{route('contacts.create')}}">Add New</a></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    @includeIf('Companies._company-selection', ['companies' => $companies])
+
+                </div>
+                <div class="col">
+                    @include('layouts._filter', ['companies' => $companies])
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-borderless table-primary align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th colspan="3">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            @foreach($contacts as $contact)
+                <tr class="table-primary">
+                    <td>{{ $contact->id }}</td>
+                    <td>{{ $contact->first_name }}</td>
+                    <td>{{ $contact->phone }}</td>
+                    <td>{{ $contact->email }}</td>
+                    <td>{{ $contact->company }}</td>
+                    <td>Item</td>
+                    <td>
+                        <a href="{{ route('contacts.show', ['id' => $contact->id]) }}" class="btn btn-outline-primary">Détails</a>
+                        <a class="btn btn-outline-warning" href="{{route('contacts.modify',['id'=>$contact->id])}}">Modifier</a>
+
+                        <form id="delete-form-{{ $contact->id }}" action="{{ route('contacts.destroy', ['id' => $contact->id]) }}" method="POST" style="display: inline" >
+                            <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('{{ $contact->id }}')">Supprimer</button>
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+            <tfoot></tfoot>
+            <script>
+                function confirmDelete(contactId) {
+                    if (confirm("Êtes-vous sûr de vouloir supprimer ce contact ?")) {
+                        event.preventDefault();
+                        document.getElementById('delete-form-' + contactId).submit();
+                    }
+                }
+            </script>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation example" class="" >
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+</div>
+
+
+
+<!-- JS Bootstrap -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
